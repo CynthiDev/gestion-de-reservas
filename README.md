@@ -1,5 +1,5 @@
 
-# gestión de Reservas - Don Mario
+# Gestión de Reservas - Don Mario
 
 Este proyecto  es la entrega Grupal para  la materia DEVOPS
 
