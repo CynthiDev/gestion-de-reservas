@@ -1,0 +1,104 @@
+doctype html
+html
+    head
+        title Lista de Reservas
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body
+        h1 Lista de Reservas
+
+        table
+            thead
+                tr
+                    th Nombre del Cliente
+                    th Fecha
+                    th Hora
+                    th Número de Mesa
+                    th Estado
+                    th Comentarios
+                    th Acciones
+            tbody 
+                each reserva in listaReservas
+                    tr
+                        td= reserva.nombreCliente
+                        - var fecha = new Date(reserva.fechaDeTurno)
+                        - var fechaFormateada = isNaN(fecha.getTime()) ? 'Fecha no disponible' : fecha.toLocaleDateString('es-ES')
+                        td= fechaFormateada
+                        - var fecha = new Date(reserva.fechaDeTurno)
+                        - var horas = String(fecha.getHours()).padStart(2, '0') 
+                        - var minutos = String(fecha.getMinutes()).padStart(2, '0') 
+                        - var hora = horas + ':' + minutos 
+                        td= hora
+                        td= reserva.numMesa || 'Mesa no asignada'
+                        td= reserva.estado || 'Estado no disponible'
+                        td= reserva.comentario || 'Sin comentarios.'
+                        td
+                            button(type='button', onclick=`actualizarEstadoReserva('${reserva._id}', 'Confirmada')`, class=reserva.estado === 'Confirmada' || reserva.estado === 'Cancelada' ? 'btnDisabled': '', disabled=reserva.estado === 'Confirmada' || reserva.estado === 'Cancelada').btnConfirm Confirmar
+                            button(type='button', onclick=`actualizarEstadoReserva('${reserva._id}', 'Cancelada')`,class=reserva.estado === 'Cancelada' ? 'btnDisabled' : '', disabled=reserva.estado === 'Cancelada').btnCancel Cancelar
+                            button(type='button', onclick=`eliminarReserva('${reserva._id}')`).btnDelete Eliminar
+
+        button(type='button', onclick="location.href='/main'") Volver
+
+
+
+script.
+  function actualizarEstadoReserva(id, nuevoEstado) {
+  
+    let confirmacion =false;
+    if (nuevoEstado === 'Confirmada'){
+      confirmacion = confirm("¿Estás seguro de que quieres confirmar esta reserva?");
+    } else{
+      confirmacion = confirm("¿Estás seguro de que quieres cancelar esta reserva?");
+    }
+    
+    
+    if (confirmacion) {
+      fetch(`/api/reservations/${id}/${nuevoEstado}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Error al actualizar el estado de la reserva');
+      })
+      .then(data => {
+        alert('Estado de la reserva actualizado con éxito.');
+        location.reload(); // Recargar la página si es necesario
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('No se pudo actualizar el estado de la reserva.');
+      });
+    }
+  };
+
+  function eliminarReserva(id) {
+
+    const confirmacion = confirm("¿Estás seguro de que quieres eliminar esta reserva?");
+    
+    if (confirmacion) {
+      fetch(`/api/reservations/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Error al eliminar la reserva');
+      })
+      .then(data => {
+        alert('Reserva eliminada con éxito');
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('No se pudo eliminar la reserva.');
+      });
+    }
+  };
