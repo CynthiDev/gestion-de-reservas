@@ -1,0 +1,26 @@
+doctype html
+html
+  head
+    title Nueva Reserva
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    h1 Realizar reserva
+
+    form(action='/api/reservations', method='post')
+        p Seleccione una opción:
+        each fecha in fechasDisponibles
+            div.radioBtnContainer
+            label(for=fecha.mesa) Fecha: #{new Date(fecha.turno).toLocaleDateString('es-ES')} Hora: #{fecha.turno.split('T')[1].split('.')[0]} Mesa: #{fecha.mesa}
+            input(type='radio', id=fecha.mesa, name='reserva', value=`${fecha.mesa}|${fecha.turno}`, required)
+
+        div 
+            label(for='nombreCliente') Nombre:
+            input(type='text', id='nombreCliente', name='nombreCliente', required) 
+        div
+            label(for='comentario') Comentarios:
+            textarea(id='comentario', name='comentario', rows='4', cols='50')
+        div 
+            input(type='hidden', name='usernameUsuarioCreador', value=user.username)
+        div
+            button(type='submit') Reservar
+            button(type='button', onclick="location.href='/main'") Volver 
