@@ -43,7 +43,7 @@ export async function getReservasPorRolUsuario(username) {
 
     // Filtrar reservas según el rol del usuario
     if (usuarioEncontrado.rol === UserRol.CLIENTE) {
-      reservasSelected = await Reservation.find({ username });
+      reservasSelected = await Reservation.find({ usernameUsuarioCreador: username });
     } else if (usuarioEncontrado.rol === UserRol.PERSONAL) {
       reservasSelected = await Reservation.find(); // Todas las reservas
     }
