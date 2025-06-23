@@ -1,0 +1,74 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #FAFAFA;
+}
+
+div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+button{
+  margin: 5px;
+  padding: 5px;
+  border-radius: 10px;
+  width: 150px;
+  height: 40px;
+  cursor: pointer;
+}
+
+h2 {
+  color: green;
+}
+
+.radioBtnContainer{
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnConfirm, .btnDelete, .btnCancel{
+  height: 30px;
+  width: 100px;
+}
+
+.btnConfirm{
+  background-color: green;
+  color: white;
+}
+
+.btnCancel{
+  background-color: rgb(226, 162, 24);
+  color: white;
+}
+
+.btnDelete{
+  background-color: #a81919;
+  color: white;
+}
+
+.btnDisabled {
+  background-color: #ccc; 
+  color: #666;       
+  cursor: not-allowed;   
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}

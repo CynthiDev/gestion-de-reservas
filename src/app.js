@@ -9,9 +9,12 @@ import userRouters from './routes/userRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
 import { fileURLToPath } from 'url';
 import { baseAPI } from './core/const.js';
-import session from 'express-session';
 import 'dotenv/config';  //reconoce variables de entorno
 import connectDB from './config/database.js';
+import jwt from 'jsonwebtoken';
+
+
+
 
 
 
@@ -28,7 +31,9 @@ const __dirname = path.dirname(__filename);
 app.set('port', process.env.PORT || 3000); 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-connectDB();
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
 
 
 
@@ -37,14 +42,6 @@ app.use(logger('dev'));  // Logger de peticiones
 app.use(express.json());  // Parsear JSON en las solicitudes
 app.use(express.urlencoded({ extended: true }));  // Para manejar formularios
 app.use(cookieParser());  // Manejar cookies
-app.use(session({  // datos de sesión
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 60 * 60 * 1000 } // 1 hora
-}));
-
-
 
 
 // Routes
@@ -55,7 +52,18 @@ app.use(baseAPI+'/reservations', reservationRoutes);
 
 // Ruta principal
 app.get('/main', (req, res) => {
-  res.render('main', { user: req.session.user }); 
+  const token= req.cookies.token;
+  if (!token) {
+    return res.status(403).send('Acceso no autorizado')
+  }
+
+  try {
+    const data = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    res.render('main', { user: data, token}); 
+  } catch (error) {
+    return res.status(403).send('Acceso no autorizado 2')
+  }
+  
 });
 
 
