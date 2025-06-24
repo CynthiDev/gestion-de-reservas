@@ -14,7 +14,8 @@ Este proyecto  es la entrega Grupal para  la materia DEVOPS
 
 ## Estructura del Proyecto
 
-en progreso...
+![image](https://github.com/user-attachments/assets/2a1bedca-c5bc-40a4-8b68-c4398fdc94fd)
+
 
 ## Despliegue en Render
 
