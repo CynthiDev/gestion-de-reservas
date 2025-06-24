@@ -14,7 +14,7 @@ Este proyecto  es la entrega Grupal para  la materia DEVOPS
 
 ## Estructura del Proyecto
 
-![image](https://github.com/user-attachments/assets/2a1bedca-c5bc-40a4-8b68-c4398fdc94fd)
+![image](https://github.com/user-attachments/assets/92f4573c-f92a-4f7b-9a81-1ac6a5e31424)
 
 
 ## Despliegue en Render
@@ -124,3 +124,37 @@ El archivo de configuración se encuentra en:
 - El entorno de despliegue se define mediante un contenedor Docker.
 
 > Con esta configuración, se garantiza que no se despliega código roto o sin testear.
+
+---
+
+## Diagrama del pipeline DevOps
+
+![image](https://github.com/user-attachments/assets/cdc76413-a5e3-4166-b706-439c7556b79a)
+
+---
+
+## Conclusiones y roles de equipo
+
+Durante el desarrollo del trabajo integrador se aplicaron las principales prácticas del enfoque DevOps, permitiendo abordar el ciclo de vida completo de una aplicación: desde su desarrollo hasta su despliegue automatizado en un entorno en la nube.
+
+Se logró:
+Crear una aplicación funcional utilizando Node.js como backend, integrando una base de datos MongoDB para persistencia.
+Gestionar el código fuente utilizando Git, aplicando una estrategia de ramas clara basada en main, develop y ramas feature/*.
+Contenerizar la aplicación utilizando Docker, facilitando su portabilidad y ejecución en diferentes entornos.
+Crear pruebas automatizadas que se ejecutan como parte de la integración continua para validar el comportamiento de la app.
+Configurar un pipeline CI/CD utilizando GitHub Actions, que ejecuta automáticamente los tests, construye la imagen Docker, la publica en GitHub Container Registry y despliega la aplicación en un entorno de pruebas remoto (como Render o similar).
+
+Este enfoque permitió reducir los errores manuales, acelerar los ciclos de entrega y mantener control sobre la calidad del código.
+La implementación de DevOps mostró beneficios claros en cuanto a:
+Automatización del flujo de trabajo.
+Reducción de tiempo para detectar fallos.
+Mejora de la trazabilidad de cambios.
+Facilidad de despliegue en distintos entornos.
+
+### Roles de equipo
+
+- Cynthia Estefanía Choque Galindo - Desarrollo backend: Programó la lógica del servidor en Node.js, definió rutas, gestionó la conexión a MongoDB y validaciones.
+- Guido Vizzotti - Testing y QA: Desarrolló las pruebas automatizadas, verificó endpoints y supervisó la ejecución de tests en el pipeline.
+- Matías Garnica - Contenerización: Creó el Dockerfile, docker-compose.yml y configuró el flujo de CI/CD en GitHub Actions.
+- Mauricio Galera - Control de versiones y ramas: Gestionó el uso de Git y GitHub, estructuró el uso de ramas (main, develop, feature/*) y resolvió conflictos.
+- Cinthia Romina Vota - Documentación y despliegue: Redactó el README.md, diagramó el flujo DevOps, explicó la estructura del proyecto y configuró el despliegue en Render/Vercel.
