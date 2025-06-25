@@ -90,10 +90,4 @@ app.use(function(err, req, res, next) {
 
 
 
-// Server is lisening
-app.listen(app.get('port'), () => {
-  console.log(`Servidor escuchando en http://localhost:${app.get('port')}`);
-});
-
-
 export default app;

@@ -1,40 +1,18 @@
-#!/usr/bin/env node
+// ./bin/www
+
+// ¡Usar import en lugar de var ... = require(...)! ya que el proyecto usa Módulos ES (ESM) 
+import app from '../src/app.js';
+import debug from 'debug';
+import http from 'http';
+
+// Crea el logger de debug
+const debugLogger = debug('gestion-de-reservas:server');
 
 /**
- * Module dependencies.
+ * Normaliza un puerto en un número, una cadena o falso.
  */
-
-var app = require('../app');
-var debug = require('debug')('caso3-grupomdq:server');
-var http = require('http');
-
-/**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  const port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -50,26 +28,34 @@ function normalizePort(val) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Obtiene el puerto del entorno y lo almacena en Express.
  */
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
 
+/**
+ * Crea el servidor HTTP.
+ */
+const server = http.createServer(app);
+
+/**
+ * Event listener para el evento "error" del servidor HTTP.
+ */
 function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
   }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
+  // Maneja errores específicos de escucha con mensajes amigables
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      console.error(bind + ' requiere privilegios elevados');
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      console.error(bind + ' ya está en uso');
       process.exit(1);
       break;
     default:
@@ -78,13 +64,18 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener para el evento "listening" del servidor HTTP.
  */
-
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  debugLogger('Listening on ' + bind);
+  console.log('Servidor escuchando en ' + bind);
 }
+
+/**
+ * Escucha en el puerto proporcionado, en todas las interfaces de red.
+ */
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
