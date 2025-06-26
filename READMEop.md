@@ -57,42 +57,72 @@ Para ejecutar la aplicación en tu entorno local usando Docker:
 
 ## 2. Arquitectura y Automatización DevOps
 
-El proyecto implementa un flujo de trabajo DevOps completo, desde el código hasta el despliegue.
+El proyecto implementa un flujo de trabajo DevOps completo, donde la automatización y las buenas prácticas garantizan un ciclo de vida del software robusto, seguro y eficiente.
 
-### A. Contenerización con Docker
+### A. Estrategia de Ramas y Flujo de Trabajo (Git Flow)
 
-*   **`Dockerfile`:** Utiliza una **compilación multi-etapa** para crear una imagen de producción ligera y segura. Solo se instalan las dependencias de producción, optimizando el tamaño y la superficie de ataque.
+Se utiliza un modelo de Git Flow para gestionar el código, asegurando que la rama `main` siempre contenga código estable y listo para producción.
+
+1.  **Ramas de Feature (`feature/*`):** Todo nuevo desarrollo se realiza en una rama de feature, creada a partir de `develop`.
+2.  **Integración en `develop`:** Una vez completada, la feature se propone para su integración en `develop` a través de un **Pull Request**.
+3.  **Promoción a `main`:** Después de que `develop` ha sido probado en el entorno de Staging, se abre un **Pull Request** de `develop` a `main` para el despliegue en producción.
+
+
+
+### B. Contenerización con Docker
+
+*   **`Dockerfile`:** Utiliza una **compilación multi-etapa** para crear una imagen de producción ligera y segura. Solo se instalan las dependencias de producción, optimizando el tamaño final y la superficie de ataque.
 *   **`entrypoint.sh`:** Se utiliza un script de `entrypoint` personalizado para orquestar el inicio del contenedor. Este script es responsable de:
-    1.  Iniciar el servidor de la aplicación.
-    2.  Ejecutar un script de "seeding" para poblar la base de datos (ver más abajo).
-    3.  Asegurar que el contenedor se mantenga en ejecución.
+    1.  Iniciar el servidor de la aplicación en segundo plano.
+    2.  Ejecutar un script de "seeding" para poblar la base de datos de forma segura.
+    3.  Asegurar que el contenedor se mantenga en ejecución, esperando a que el proceso principal de la aplicación termine.
 
-### B. Inicialización Automática de la Base de Datos (Seeding)
+
+
+
+### C. Inicialización Automática de la Base de Datos (Seeding)
 
 Para garantizar que los entornos de despliegue sean funcionales desde el primer momento, el proyecto incluye un script de `seed` automático.
 
 *   **Funcionamiento:** Tras un despliegue exitoso, el `entrypoint.sh` ejecuta un script que comprueba si la colección de `users` en la base de datos está vacía.
-*   **Población Inteligente:** Si la base de datos está vacía, el script la puebla con un conjunto predefinido de usuarios (clientes y personal), hasheando sus contraseñas. Si la base de datos ya contiene datos, el script no realiza ninguna acción para prevenir la pérdida de datos.
+*   **Población Inteligente:** Si la base de datos está vacía, el script la puebla con un conjunto predefinido de usuarios. Si la base de datos ya contiene datos, el script no realiza ninguna acción.
 *   **Beneficio:** Este enfoque idempotente asegura que cualquier nuevo despliegue (local, staging o producción) sea **inmediatamente utilizable** sin necesidad de configuración manual, un principio clave de DevOps.
 
-### C. Pipeline de CI/CD con GitHub Actions
 
-El repositorio está configurado con dos workflows de GitHub Actions que se activan según la rama.
 
-![Diagrama del Pipeline DevOps](https://i.imgur.com/tu_diagrama_aqui.png)  
-*(imagen real de tu diagrama)*
+### D. Pipeline de CI/CD con GitHub Actions
 
-**Flujo para la rama `develop` (Entorno de Staging):**
-1.  **Push a `develop`**: Activa el workflow `deploy-develop.yml`.
-2.  **Job: Test**: Se instala Node.js y **todas** las dependencias (incluyendo `devDependencies`) para ejecutar la suite de pruebas con Jest. Esto valida la integridad del código.
-3.  **Job: Build & Push**: Si los tests se ejecutan correctamente, se construye una imagen Docker optimizada, basada en la misma configuración utilizada para producción. Esta imagen se etiqueta como :develop y se publica en Docker Hub.
-4.  **Job: Deploy**: Se envía una señal (webhook) a Render, que toma la nueva imagen `:develop` y redespliega el servicio de **staging**.
+El pipeline de CI/CD es el núcleo de la automatización y está diseñado para actuar de forma inteligente según el contexto (Pull Request o Push), utilizando dos archivos de workflow: `deploy-develop.yml` y `deploy-main.yml`.
 
-**Flujo para la rama `main` (Entorno de Producción):**
-*   El proceso es idéntico y se activa con un `push` a `main`.
-*   La imagen Docker se etiqueta como `:latest`.
-*   El despliegue se realiza en el servicio de **producción** en Render.
-*   Se utilizan diferentes **Variables de Entorno** en Render para que este despliegue se conecte a la base de datos de producción (`reservas-production`).
+![Diagrama del Pipeline CI/CD](https://i.imgur.com/tu_diagrama_aqui.png)  
+*( imagen del diagrama)*
+
+#### **Lógica del Workflow (Aplicada a ambos entornos)**
+
+Ambos workflows (`develop` y `main`) operan bajo la misma lógica dual para maximizar la seguridad y la eficiencia:
+
+*   **1. Fase de Integración Continua (CI) - Al crear un Pull Request:**
+    *   **Disparador:** `on: pull_request`
+    *   **Propósito:** Actúa como una **barrera de calidad** antes de que cualquier código sea fusionado a las ramas principales.
+    *   **Acción:** Se ejecuta **únicamente el job de `test`**. No se construye ninguna imagen ni se despliega nada.
+    *   **Resultado:** El Pull Request en GitHub muestra un "check" verde si las pruebas pasan, dando confianza al equipo para aprobar la fusión.
+
+*   **2. Fase de Despliegue Continuo (CD) - Al fusionar el código (Push):**
+    *   **Disparador:** `on: push`
+    *   **Propósito:** Desplegar la nueva versión verificada de la aplicación en el entorno correspondiente.
+    *   **Acción:** Se ejecuta la **secuencia completa de jobs (`test`, `build-and-push-docker`, `deploy`)**.
+
+---
+
+#### **Implementación por Entorno**
+
+*   **Para `develop` (Staging):**
+    *   El workflow `deploy-develop.yml` se encarga del proceso.
+    *   En la fase de CD, la imagen Docker se etiqueta como `:develop` y se despliega en el servicio de **staging** en Render. Este servicio utiliza sus propias variables de entorno para conectarse a la base de datos de staging (`reservas-staging`).
+
+*   **Para `main` (Producción):**
+    *   El workflow `deploy-main.yml` gestiona el despliegue a producción.
+    *   En la fase de CD, la imagen Docker se etiqueta como `:latest` y se despliega en el servicio de **producción** en Render, que utiliza sus propias variables de entorno para conectarse a la base de datos de producción (`reservas-production`).
 
 ---
 

@@ -1,12 +1,16 @@
-name: Deploy to Develop (Staging)
+name: CI/CD for Develop (Staging)
 
 on:
   push:
     branches:
       - develop
 
+  pull_request:
+    branches:
+      - develop
+
 jobs:
-  test:
+  test: # Este job se ejecutará siempre (en push y en pull_request)
     name: Run Unit & Integration Tests
     runs-on: ubuntu-latest
     steps:
@@ -32,8 +36,12 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           PORT: 3000
 
+  # --- Jobs de Despliegue ---
+  # Estos jobs SÓLO deben ejecutarse en un PUSH, no en un PULL REQUEST.
   build-and-push-docker:
     name: Build and Push Docker Image
+    # Condición: Ejecutar este job SÓLO si el evento fue un 'push'
+    if: github.event_name == 'push' 
     needs: test # Se ejecuta solo si los tests pasan
     runs-on: ubuntu-latest
     steps:
@@ -55,6 +63,8 @@ jobs:
 
   deploy:
     name: Deploy to Render
+    # Condición: Ejecutar este job SÓLO si el evento fue un 'push'
+    if: github.event_name == 'push'
     needs: build-and-push-docker # Se ejecuta solo si la imagen se construyó
     runs-on: ubuntu-latest
     steps:
