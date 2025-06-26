@@ -14,10 +14,7 @@ const mongoURI = mongoAtlasURI || 'mongodb://localhost:27017/reservasDonMario';
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(mongoURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+        await mongoose.connect(mongoURI);
         console.log('Conectado a MongoDB!');
     } catch (err) {
         console.error('Error al conectar a MongoDB:', err);

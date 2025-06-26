@@ -23,8 +23,13 @@ WORKDIR /usr/src/app
 # Copiamos las dependencias instaladas y el código desde la etapa 'builder'
 COPY --from=builder /usr/src/app .
 
-# Exponemos el puerto en el que corre la aplicación (el estándar de Express es 3000)
+# 1. Copiamos el script de entrypoint a la imagen
+COPY entrypoint.sh .
+# 2. Le damos permisos de ejecución al script
+RUN chmod +x ./entrypoint.sh
+
+# Exponemos el puerto en el que corre la aplicación 
 EXPOSE 3000
 
-# El comando para iniciar la aplicación (basado en tu estructura con 'bin/www')
-CMD [ "node", "./bin/www" ]
+# 3. Usamos  el punto de entrada del contenedor
+ENTRYPOINT ["./entrypoint.sh"]

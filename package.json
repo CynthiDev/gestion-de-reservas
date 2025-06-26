@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest"
+    "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest",
+    "db:seed": "node ./scripts/seed.js" 
   },
   "repository": {
     "type": "git",
