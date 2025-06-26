@@ -1,5 +1,4 @@
- # Deploy a Producción (automatizado)
-name: Deploy to Production (Render) from Main
+name: Deploy to Main (Production)
 
 on:
   push:
@@ -7,24 +6,63 @@ on:
       - main
 
 jobs:
-  deploy-production:
+  test:
+    name: Run Unit & Integration Tests
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Log in to Docker Hub
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        env:
+          # Pasamos todas las variables necesarias para construir la URI en el entorno de testing
+          MONGO_USER: ${{ secrets.MONGO_USER }}
+          MONGO_PWD: ${{ secrets.MONGO_PWD }}
+          MONGO_DB: ${{ secrets.MONGO_DB }}
+          MONGO_HOST: ${{ secrets.MONGO_HOST }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          PORT: 3000
+
+  build-and-push-docker:
+    name: Build and Push Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/miapp-node-express:latest .
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          # Usamos 'latest' para la imagen de producción
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/gestion-de-reservas:latest
 
-      - name: Push image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/miapp-node-express:latest
-
-      - name: Deploy to Render PRODUCCIÓN
-        run: curl -X POST ${{ secrets.RENDER_PROD_HOOK }}
+  deploy:
+    name: Deploy to Render
+    needs: build-and-push-docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -d '{}' \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_MAIN }}/deploys

@@ -1,6 +1,8 @@
 import * as userService from "../services/userService.js";
 import User from '../models/User.js';
 import bcrypt from 'bcrypt'; // Importa bcrypt
+import jwt from 'jsonwebtoken';
+import cookieParser from "cookie-parser";
 
 // Login de usuario
 export const loginUser = async (req, res) => {
@@ -19,9 +21,23 @@ export const loginUser = async (req, res) => {
       return res.status(401).send("Contraseña incorrecta");
     }
 
-    // Almacena el usuario en la sesión si las credenciales son correctas
-    req.session.user = user;
-    res.redirect("/main");
+    const payload = {
+      userId: user._id,
+      username: user.username,
+      nombre: user.nombre
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+
+    res.cookie('token', token, {
+      httpOnly: true,  // Impide que el token sea accesible desde JavaScript
+      secure: process.env.NODE_ENV === 'production',  // Solo en HTTPS en producción
+      maxAge: 3600000 // 1 hora de expiración
+    })
+    
+    res.redirect('/main')
+
+    // res.send({ user, token }); 
   } catch (error) {
     console.error("Error al autenticar el usuario:", error);
     res.status(500).send("Error en el servidor");
@@ -30,10 +46,8 @@ export const loginUser = async (req, res) => {
 
 // Logout de usuario
 export const logoutUser = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) return res.status(500).send("Error al cerrar sesión");
-    res.render("index");
-  });
+  res.clearCookie('token');
+  res.render("index");
 };
 
 // Crear un nuevo usuario
