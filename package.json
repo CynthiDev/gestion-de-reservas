@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest"
+    "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest",
+    "db:seed": "node ./scripts/seed.js" 
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,7 @@
   ],
   "author": "Grupo2-MDQ",
   "license": "ISC",
-    "dependencies": {
+  "dependencies": {
     "bcrypt": "^5.1.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -26,6 +27,8 @@
     "express": "^4.21.1",
     "express-session": "^1.18.1",
     "http-errors": "~1.6.3",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "luxon": "^3.5.0",
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.2",

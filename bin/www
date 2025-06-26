@@ -1,0 +1,81 @@
+// ./bin/www
+
+// ¡Usar import en lugar de var ... = require(...)! ya que el proyecto usa Módulos ES (ESM) 
+import app from '../src/app.js';
+import debug from 'debug';
+import http from 'http';
+
+// Crea el logger de debug
+const debugLogger = debug('gestion-de-reservas:server');
+
+/**
+ * Normaliza un puerto en un número, una cadena o falso.
+ */
+function normalizePort(val) {
+  const port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Obtiene el puerto del entorno y lo almacena en Express.
+ */
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Crea el servidor HTTP.
+ */
+const server = http.createServer(app);
+
+/**
+ * Event listener para el evento "error" del servidor HTTP.
+ */
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+
+  // Maneja errores específicos de escucha con mensajes amigables
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requiere privilegios elevados');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' ya está en uso');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener para el evento "listening" del servidor HTTP.
+ */
+function onListening() {
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  debugLogger('Listening on ' + bind);
+  console.log('Servidor escuchando en ' + bind);
+}
+
+/**
+ * Escucha en el puerto proporcionado, en todas las interfaces de red.
+ */
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);

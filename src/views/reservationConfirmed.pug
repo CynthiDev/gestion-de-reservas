@@ -1,0 +1,17 @@
+doctype html
+html
+    head
+        title Confirmación de Reserva
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        script.
+            window.onload = function() {
+                const mensaje = new URLSearchParams(window.location.search).get('mensaje');
+                if (mensaje) {
+                    alert(mensaje);
+                }
+            }
+    body
+        h1 Confirmación
+        p Tu reserva ha sido creada con éxito.
+        button(onclick="location.href='/api/reservations/disponibles'") Nueva Reserva
+        button(onclick="location.href='/main'") Volver a Inicio
