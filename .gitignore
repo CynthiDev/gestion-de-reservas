@@ -1,2 +1,5 @@
 /node_modules
 coverage/
+
+# dotenv environment variables file
+.env

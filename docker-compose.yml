@@ -1,0 +1,17 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    # Construye la imagen usando el Dockerfile en el directorio actual
+    build: .
+    # Mapea el puerto 3000 del contenedor al puerto 3000 de tu máquina
+    ports:
+      - "3000:3000"
+    # Carga las variables de entorno desde el archivo .env
+    env_file:
+      - ./.env
+    # Monta el volumen para que los cambios en tu código se reflejen al instante en el contenedor (ideal para desarrollo)
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules # Excluye node_modules para no sobreescribir los del contenedor
