@@ -132,7 +132,6 @@ Ambos workflows (`develop` y `main`) operan bajo la misma lógica dual para maxi
     *   **Propósito:** Desplegar la nueva versión verificada de la aplicación en el entorno correspondiente.
     *   **Acción:** Se ejecuta la **secuencia completa de jobs (`test`, `build-and-push-docker`, `deploy`)**.
 
----
 
 #### **Implementación por Entorno**
 
@@ -143,6 +142,11 @@ Ambos workflows (`develop` y `main`) operan bajo la misma lógica dual para maxi
 *   **Para `main` (Producción):**
     *   El workflow `deploy-main.yml` gestiona el despliegue a producción.
     *   En la fase de CD, la imagen Docker se etiqueta como `:latest` y se despliega en el servicio de **producción** en Render, que utiliza sus propias variables de entorno para conectarse a la base de datos de producción (`reservas-production`).
+
+
+![workflow-staging](https://github.com/user-attachments/assets/582d529d-04c3-4fce-8900-fa6985384033)
+
+![workflow-prod](https://github.com/user-attachments/assets/da83f6ab-8a6a-4925-ad3f-96ffcfc08024)
 
 ---
 ## 3. Evidencia de Ejecución
