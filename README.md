@@ -16,25 +16,24 @@ La aplicación es un sistema de gestión de reservas para un restaurante, constr
 
 ## Tecnologías Utilizadas
 
-*   **Backend:** Node.js, Express.js (Framework), Mongoose (ODM para MongoDB).
-*   **Base de Datos:** MongoDB Atlas (Base de datos NoSQL en la nube).
-*   **Frontend:** Pug (Motor de plantillas para renderizado en el servidor).
-*   **Seguridad y Autenticación:**
-    *   **JSON Web Tokens (JWT):** Para la gestión de sesiones stateless.
-    *   **bcrypt:** Para el hasheo seguro e irreversible de contraseñas.
-    *   **Cookies httpOnly:** Para el almacenamiento seguro de tokens en el cliente.
-*   **Contenerización y Registros:**
-    *   **Docker:** Para la creación de imágenes portables y consistentes.
-    *   **Docker Compose:** Para la orquestación del entorno de desarrollo local.
-    *   **Docker Hub:** Como registro para almacenar las imágenes de la aplicación.
-*   **CI/CD y Automatización:**
-    *   **GitHub Actions:** Como orquestador del pipeline de integración y despliegue continuo.
-    *   **Git & Git Flow:** Para el control de versiones y la estrategia de ramificación.
-*   **Plataforma de Despliegue (PaaS):** Render.
-*   **Testing Automatizado:**
-    *   **Jest:** Como framework principal para las pruebas.
-    *   **Supertest:** Para las pruebas de integración de los endpoints de la API.
-    *   **mongodb-memory-server:** Para ejecutar pruebas contra una base de datos en memoria, aislando los tests del entorno de desarrollo.
+| Área                    | Tecnología / Herramienta     | Propósito / Descripción Breve                                                 |
+| :---------------------- | :--------------------------- | :---------------------------------------------------------------------------- |
+| **Backend**             | `Node.js / Express.js`       | Plataforma y framework para la construcción del servidor y la API.            |
+|                         | `Mongoose`                   | ODM (Object Data Modeling) para interactuar con MongoDB de forma estructurada. |
+| **Base de Datos**       | `MongoDB Atlas`              | Base de datos NoSQL como servicio (DBaaS) en la nube.                         |
+| **Frontend**            | `Pug`                        | Motor de plantillas para el renderizado dinámico de vistas en el servidor.    |
+| **Seguridad**           | `JSON Web Tokens (JWT)`      | Para la gestión de sesiones stateless y la autorización.                      |
+|                         | `bcrypt`                     | Librería para el hasheo seguro e irreversible de contraseñas.                 |
+|                         | `Cookies (httpOnly)`         | Mecanismo para el almacenamiento seguro de tokens en el navegador del cliente.  |
+| **Contenerización**     | `Docker`                     | Creación de imágenes portables y consistentes de la aplicación.             |
+|                         | `Docker Compose`             | Orquestación del entorno de desarrollo local.                               |
+|                         | `Docker Hub`                 | Registro de contenedores para almacenar y distribuir las imágenes.            |
+| **CI/CD**               | `GitHub Actions`             | Orquestador del pipeline para la automatización de pruebas y despliegues.   |
+|                         | `Git & Git Flow`             | Control de versiones y estrategia de ramificación para el desarrollo.       |
+| **Plataforma (PaaS)**   | `Render`                     | Servicio en la nube para el despliegue y alojamiento de la aplicación.      |
+| **Testing**             | `Jest`                       | Framework principal para la ejecución de la suite de pruebas.                 |
+|                         | `Supertest`                  | Librería para las pruebas de integración de los endpoints de la API.        |
+|                         | `mongodb-memory-server`      | Ejecución de tests contra una base de datos en memoria para un aislamiento total. |
 
 ---
 
@@ -115,21 +114,26 @@ Para garantizar que los entornos de despliegue sean funcionales desde el primer 
 El pipeline de CI/CD es el núcleo de la automatización y está diseñado para actuar de forma inteligente según el contexto (Pull Request o Push), utilizando dos archivos de workflow: `deploy-develop.yml` y `deploy-main.yml`.
 
 
+
+
 #### **Lógica del Workflow (Aplicada a ambos entornos)**
 
 Ambos workflows (`develop` y `main`) operan bajo la misma lógica dual para maximizar la seguridad y la eficiencia:
 
 *   **1. Fase de Integración Continua (CI) - Al crear un Pull Request:**
     *   **Disparador:** `on: pull_request`
-    *   **Propósito:** Actúa como una **barrera de calidad** antes de que cualquier código sea fusionado a las ramas principales.
-    *   **Acción:** Se ejecuta **únicamente el job de `test`**. No se construye ninguna imagen ni se despliega nada.
-    *   **Resultado:** El Pull Request en GitHub muestra un "check" verde si las pruebas pasan, dando confianza al equipo para aprobar la fusión.
+    *   **Propósito:** Actúa como una **barrera de calidad de dos pasos** antes de que cualquier código sea fusionado a las ramas principales.
+    *   **Acciones Requeridas:**
+        1.  **Validación Automatizada:** Se ejecuta **únicamente el job de `test`**. El sistema verifica automáticamente que los cambios no rompan la funcionalidad existente.
+        2.  **Revisión Humana:** Gracias a las **reglas de protección de ramas** configuradas en GitHub, se requiere la **aprobación explícita de al menos un miembro del equipo**. Este paso asegura la calidad, legibilidad y lógica del código.
+    *   **Resultado:** El sistema **impide la fusión del Pull Request** hasta que **ambas condiciones se cumplen**: los tests automáticos pasan y la revisión humana es aprobada. Esto garantiza la máxima calidad y consenso antes de integrar el código.
 
 *   **2. Fase de Despliegue Continuo (CD) - Al fusionar el código (Push):**
     *   **Disparador:** `on: push`
-    *   **Propósito:** Desplegar la nueva versión verificada de la aplicación en el entorno correspondiente.
+    *   **Propósito:** Desplegar la nueva versión, ya validada, en el entorno correspondiente.
     *   **Acción:** Se ejecuta la **secuencia completa de jobs (`test`, `build-and-push-docker`, `deploy`)**.
 
+---
 
 #### **Implementación por Entorno**
 
@@ -255,25 +259,11 @@ En conclusión, este trabajo no solo entregó una aplicación funcional, sino qu
 
 El proyecto fue desarrollado de manera colaborativa, donde cada miembro aportó tanto al desarrollo de la aplicación como a la implementación de la infraestructura DevOps. Las responsabilidades se distribuyeron de la siguiente manera:
 
-*   **Cynthia Estefanía Choque Galindo:**
-    *   **Desarrollo del Backend:** Programó la lógica central del servidor en Node.js, incluyendo la definición de rutas, la gestión de controladores y la conexión con la base de datos MongoDB.
-    *   **Orquestación de CI/CD:** Diseñó y escribió los workflows de GitHub Actions (`.yml`) que automatizan el ciclo completo de pruebas y despliegues para los entornos de `staging` y `producción`.
-    *   **Documentación:** Lideró la creación de la documentación técnica del proyecto (`README.md`).
-
-*   **Mauricio Galera:**
-    *   **Autenticación y Seguridad:** Implementó el sistema de autenticación basado en JSON Web Tokens (JWT), incluyendo la generación de tokens en el login y su validación mediante cookies seguras.
-    *   **Estrategia de Contenerización:** Desarrolló el `Dockerfile` optimizado con una arquitectura multi-etapa para crear imágenes ligeras y seguras, y creó el `docker-compose.yml` para estandarizar el entorno de desarrollo local.
-
-*   **Matías Garnica:**
-    *   **Desarrollo del Frontend y UI/UX:** Creó todas las vistas de la aplicación utilizando el motor de plantillas Pug y gestionó la interacción dinámica entre el frontend y el backend para asegurar una experiencia de usuario fluida.
-    *   **Automatización del Entorno:** Desarrolló el script de "seeding" (`seed.js`) y lo integró con el `entrypoint.sh` del contenedor, una contribución clave que permite que cualquier entorno se auto-configure con datos iniciales al arrancar.
-
-*   **Cinthia Romina Vota:**
-    *   **Seguridad de Datos de Usuario:** Implementó una de las características de seguridad más críticas: el hasheo de contraseñas utilizando `bcrypt`. Su trabajo asegura que las credenciales de los usuarios se almacenen de forma segura e irreversible en la base de datos.
-    *   **Integración Continua de la Calidad:** Lideró la estrategia de pruebas automatizadas. Configuró el framework de testing con Jest y Supertest y lo integró como un paso obligatorio en el pipeline de CI/CD, garantizando que el código nuevo sea validado antes de cualquier despliegue.
-
-*   **Guido Vizzotti:**
-    *   **Desarrollo de Pruebas Automatizadas:** Escribió las pruebas unitarias y de integración que verifican la correcta funcionalidad de los endpoints de la API y los métodos clave del sistema.
-    *   **Gestión de la Infraestructura en la Nube:** Aprovisionó y configuró los servicios de `staging` y `producción` en Render, gestionó las variables de entorno para cada ambiente y se encargó del monitoreo post-despliegue de las aplicaciones.
-
+| Integrante | Área de Enfoque Principal | Contribuciones Clave |
+| :--- | :--- | :--- |
+| **Cynthia Estefanía Choque Galindo**| Backend & Orquestación de CI/CD | <ul><li>Programó la lógica central del servidor en Node.js, rutas y controladores.</li><li>Diseñó y escribió los workflows de GitHub Actions (`.yml`) para la automatización completa.</li><li>Lideró la creación y mantenimiento de la documentación técnica (`README.md`).</li></ul> |
+| **Mauricio Galera** | Seguridad & Contenerización | <ul><li>Implementó el sistema de autenticación basado en JSON Web Tokens (JWT).</li><li>Desarrolló el `Dockerfile` optimizado (multi-etapa) y el `docker-compose.yml`.</li></ul> |
+| **Matías Garnica** | Frontend & Automatización de Entornos | <ul><li>Creó todas las vistas de la aplicación con el motor de plantillas Pug.</li><li>Desarrolló el script de "seeding" (`seed.js`) y el `entrypoint.sh` para la auto-configuración del entorno.</li></ul> |
+| **Cinthia Romina Vota** | Calidad & Seguridad de Datos | <ul><li>Implementó el hasheo de contraseñas con `bcrypt` para proteger los datos de usuario.</li><li>Lideró la estrategia de pruebas y la integró como un paso obligatorio en el pipeline de CI.</li></ul> |
+| **Guido Vizzotti** | Testing & Infraestructura Cloud | <ul><li>Escribió la suite de pruebas unitarias y de integración con Jest y Supertest.</li><li>Aprovisionó y configuró los servicios (`staging`, `producción`) y las variables de entorno en Render.</li></ul> |
 ---
