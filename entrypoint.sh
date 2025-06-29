@@ -1,5 +1,3 @@
-#!/bin/sh
-
 set -e
 
 echo "Iniciando el servidor de la aplicación en segundo plano..."
