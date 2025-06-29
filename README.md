@@ -114,8 +114,6 @@ Para garantizar que los entornos de despliegue sean funcionales desde el primer 
 
 El pipeline de CI/CD es el núcleo de la automatización y está diseñado para actuar de forma inteligente según el contexto (Pull Request o Push), utilizando dos archivos de workflow: `deploy-develop.yml` y `deploy-main.yml`.
 
-![Diagrama del Pipeline CI/CD](https://i.imgur.com/tu_diagrama_aqui.png)  
-*( imagen del diagrama)*
 
 #### **Lógica del Workflow (Aplicada a ambos entornos)**
 
@@ -149,32 +147,78 @@ Ambos workflows (`develop` y `main`) operan bajo la misma lógica dual para maxi
 ![workflow-prod](https://github.com/user-attachments/assets/da83f6ab-8a6a-4925-ad3f-96ffcfc08024)
 
 ---
-## 3. Evidencia de Ejecución
+## 3. Evidencia del Pipeline en Ejecución
 
-- Captura del Pull Request Exitoso (con el check verde):
-  * Qué mostrar: La página de un Pull Request (por ejemplo, de develop a main) después de que los tests han pasado. Debe verse claramente el "check" verde y el mensaje "All checks have passed".
-  * Por qué es importante: Demuestra que tu fase de Integración Continua (CI) funciona como una barrera de calidad.
-  *  ![Validación de PR con Tests Exitosos](URL_de_la_imagen.png)
+A continuación, se presentan capturas de pantalla que documentan el funcionamiento del pipeline de CI/CD, desde la validación del código hasta el almacenamiento del artefacto de despliegue.
 
-- Captura del Workflow de Despliegue en GitHub Actions:
-  * Qué mostrar: La vista detallada de una ejecución del workflow (por ejemplo, deploy-main.yml) en la pestaña "Actions" de GitHub. Deben verse todos los jobs (test, build-and-push-docker, deploy) con un "check" verde.
-  * Por qué es importante: Es la prueba de que todo el flujo de Despliegue Continuo (CD) se completó exitosamente.
-  * Texto para el README: ![Ejecución Exitosa del Pipeline de Despliegue](URL_de_la_imagen.png)
+#### A.Validación de Pull Request (Barrera de Calidad de Dos Pasos)
 
-- Captura del dcokerHub, imagenes pusheadas
+El pipeline actúa como una robusta barrera de calidad antes de fusionar cualquier cambio a las ramas principales (`develop` y `main`). Este proceso de validación consta de dos pasos obligatorios para garantizar la máxima estabilidad del código:
+
+1.  **Validación Automatizada (CI):** Al crear un Pull Request, el workflow de GitHub Actions ejecuta automáticamente la suite de pruebas. Este es el primer filtro y asegura que los nuevos cambios no rompan la funcionalidad existente.
+
+2.  **Revisión Humana (Code Review):** Además de las pruebas automáticas, se ha configurado una **regla de protección de ramas** en GitHub que exige la aprobación de al menos un miembro del equipo. Este paso es crucial para evaluar la lógica del código, el estilo y el cumplimiento de las buenas prácticas.
+
+El sistema está diseñado para que la fusión solo sea posible cuando **ambas condiciones se cumplen**.
+
+*   **Ejemplo de un PR bloqueado pendiente de revisión:**
+    En la siguiente imagen, se puede observar que aunque la **Validación Automatizada pasó** (check verde en "Run Unit & Integration Tests"), el botón de "Merge" está bloqueado porque aún **falta la Revisión Humana**.
+
+    ![PR Bloqueado Pendiente de Aprobación](URL_DE_TU_IMAGEN_BLOQUEADA.png)
+
+*   **Ejemplo de un PR aprobado y listo para fusionar:**
+    Una vez que un miembro del equipo revisa y aprueba los cambios, y los tests automáticos están en verde, el sistema desbloquea la fusión, confirmando que el código cumple con todos los requisitos de calidad.
+
+    ![PR Aprobado y Listo para Fusionar](URL_DE_TU_IMAGEN_APROBADA.png)
+
+#### B. Ejecución del Workflow de Despliegue (Despliegue Continuo)
+
+Una vez que el código se fusiona, se activa el pipeline de despliegue completo. Todos los jobs (`test`, `build-and-push-docker`, `deploy`) se ejecutan en secuencia para llevar la aplicación al entorno correspondiente.
+
+*   **Vista de un workflow de despliegue completado exitosamente en GitHub Actions:**
+
+    ![Ejecución Exitosa del Pipeline de Despliegue](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
+
+#### C. Artefactos en Docker Hub
+
+El pipeline construye y publica las imágenes Docker en Docker Hub, etiquetándolas según el entorno (`:develop` para staging, `:latest` para producción). Estas imágenes son los artefactos inmutables que se desplegarán.
+
+*   **Repositorio en Docker Hub con las imágenes publicadas:**
+
+    ![Imágenes Publicadas en Docker Hub](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
 
 ---
-## 4. Entornos Desplegados
 
-- Captura del Servicio en Render:
-   * Staging: https://gestion-reservas-staging.onrender.com/api/
-   * Prduction: https://gestion-reservas-prod.onrender.com/api/
-   * Qué mostrar: El dashboard de uno de tus servicios en Render (staging o producción). Debe verse el nombre del servicio, la URL de .onrender.com, y el estado "Live" o "Deploy successful". LOGs de inicio de la app
-   * Por qué es importante: Es la evidencia final de que el despliegue funcionó y la aplicación está en línea.
-- Captura de la Aplicación Funcionando:
-   * Qué mostrar: Una captura de pantalla de tu aplicación corriendo en el navegador, accediendo a la URL de Render (por ejemplo, la página /main después de hacer login).
-   * Por qué es importante: Demuestra que el producto final es funcional y accesible para el usuario.
-- Captura de la base de datos creada (mongo)
+## 4. Entornos Desplegados y Verificación
+
+El resultado final del pipeline es una aplicación funcional y accesible en la nube, con entornos separados para staging y producción.
+
+*   **URL del Entorno de Staging:** `https://gestion-reservas-staging.onrender.com/api`
+*   **URL del Entorno de Producción:** `https://gestion-reservas-prod.onrender.com/api`
+
+#### A. Plataforma de Despliegue (Render)
+
+Render gestiona la infraestructura y la ejecución de nuestros contenedores. El dashboard muestra el estado de los servicios y los logs del despliegue, incluyendo la ejecución del script de `entrypoint`.
+
+*   **Dashboard del servicio en Render mostrando un despliegue exitoso ("Live") y logs de inicio:**
+
+    ![Dashboard del Servicio en Render](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
+
+#### B. Inicialización de la Base de Datos (MongoDB Atlas)
+
+El script de `seeding` automático, ejecutado por el `entrypoint` la primera vez, crea las colecciones y los documentos iniciales en la base de datos correspondiente a cada entorno.
+
+*   **Colección de `users` en MongoDB Atlas después del primer despliegue, mostrando los usuarios creados por el seed:**
+
+    ![Base de Datos Poblada en MongoDB Atlas](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
+
+#### C. Aplicación en Funcionamiento
+
+La prueba final es la interacción con la aplicación desplegada. El siguiente ejemplo muestra el acceso a una ruta protegida después de un login exitoso, confirmando que todo el sistema (frontend, backend, base de datos y autenticación) está operando correctamente.
+
+*   **Vista de la aplicación en el navegador, accediendo a la página `/main` en el entorno de producción:**
+
+    ![Aplicación Funcionando en el Navegador](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
 
 
 ---
