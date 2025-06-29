@@ -69,8 +69,17 @@ Para ejecutar la aplicación en tu entorno local usando Docker:
     docker-compose up --build
     ```
 
-4.  **Accede a la aplicación:**
+4.  **Accede a la aplicación con los Usuarios de Prueba:**
     Una vez que los logs indiquen que el servidor está escuchando, la aplicación estará disponible en `http://localhost:3000/api`. La primera vez que se ejecute, la base de datos se poblará automáticamente con usuarios de prueba.
+
+    | Nombre Completo | Email (Username) | Contraseña | Rol |
+    | :--- | :--- | :--- | :--- |
+    | **Juan Pérez** | `juan.perez@example.com` | `juanperez` | Cliente |
+    | **Ana García** | `ana.garcia@example.com` | `anagarcia` | Cliente |
+    | **Carlos Rodríguez**| `carlos.rodriguez@example.com`| `carlosrodriguez`| Personal |
+    | **María López** | `maria.lopez@example.com` | `marialopez` | Personal |
+
+    > **Nota Importante:** Estas credenciales son únicamente para fines académicos. Las contraseñas son simples a propósito para facilitar el acceso y probar el sistema.    
 
 ---
 
