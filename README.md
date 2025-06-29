@@ -164,12 +164,14 @@ El sistema está diseñado para que la fusión solo sea posible cuando **ambas c
 *   **Ejemplo de un PR bloqueado pendiente de revisión:**
     En la siguiente imagen, se puede observar que aunque la **Validación Automatizada pasó** (check verde en "Run Unit & Integration Tests"), el botón de "Merge" está bloqueado porque aún **falta la Revisión Humana**.
 
-    ![PR Bloqueado Pendiente de Aprobación](URL_DE_TU_IMAGEN_BLOQUEADA.png)
+    ![Validación-de-PR-con-Tests-Exitosos](https://github.com/user-attachments/assets/d3831e86-a6a1-42d8-99ce-3de00377eb91)
+
 
 *   **Ejemplo de un PR aprobado y listo para fusionar:**
     Una vez que un miembro del equipo revisa y aprueba los cambios, y los tests automáticos están en verde, el sistema desbloquea la fusión, confirmando que el código cumple con todos los requisitos de calidad.
 
-    ![PR Aprobado y Listo para Fusionar](URL_DE_TU_IMAGEN_APROBADA.png)
+    ![PR-Aprobado-Listo-para-Fusionar](https://github.com/user-attachments/assets/ac570bcd-7f01-407d-8b42-aba49a67b053)
+
 
 #### B. Ejecución del Workflow de Despliegue (Despliegue Continuo)
 
@@ -177,7 +179,8 @@ Una vez que el código se fusiona, se activa el pipeline de despliegue completo.
 
 *   **Vista de un workflow de despliegue completado exitosamente en GitHub Actions:**
 
-    ![Ejecución Exitosa del Pipeline de Despliegue](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
+    ![Pipeline-Despliegue-completo](https://github.com/user-attachments/assets/03b0b0da-2744-4663-85e2-f4bf4790e86f)
+
 
 #### C. Artefactos en Docker Hub
 
@@ -185,7 +188,8 @@ El pipeline construye y publica las imágenes Docker en Docker Hub, etiquetándo
 
 *   **Repositorio en Docker Hub con las imágenes publicadas:**
 
-    ![Imágenes Publicadas en Docker Hub](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
+   ![repositorio-docker-hub-actualizado](https://github.com/user-attachments/assets/82ab22ea-0693-42a9-ac39-2860f8b29473)
+
 
 ---
 
@@ -201,16 +205,18 @@ El resultado final del pipeline es una aplicación funcional y accesible en la n
 Render gestiona la infraestructura y la ejecución de nuestros contenedores. El dashboard muestra el estado de los servicios y los logs del despliegue, incluyendo la ejecución del script de `entrypoint`.
 
 *   **Dashboard del servicio en Render mostrando un despliegue exitoso ("Live") y logs de inicio:**
+  
+   ![dashboard-del-servicio-render](https://github.com/user-attachments/assets/d828743c-50db-484c-884c-dd922ee081f8)
 
-    ![Dashboard del Servicio en Render](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
-
+    
 #### B. Inicialización de la Base de Datos (MongoDB Atlas)
 
 El script de `seeding` automático, ejecutado por el `entrypoint` la primera vez, crea las colecciones y los documentos iniciales en la base de datos correspondiente a cada entorno.
 
 *   **Colección de `users` en MongoDB Atlas después del primer despliegue, mostrando los usuarios creados por el seed:**
 
-    ![Base de Datos Poblada en MongoDB Atlas](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
+       ![Base-de-datos-mongo](https://github.com/user-attachments/assets/0e70169e-f614-4257-8078-db68fb487bb9)
+
 
 #### C. Aplicación en Funcionamiento
 
@@ -218,7 +224,8 @@ La prueba final es la interacción con la aplicación desplegada. El siguiente e
 
 *   **Vista de la aplicación en el navegador, accediendo a la página `/main` en el entorno de producción:**
 
-    ![Aplicación Funcionando en el Navegador](https://i.imgur.com/URL_DE_TU_IMAGEN_AQUI.png)
+    ![App-funcionando-en-navegador](https://github.com/user-attachments/assets/96abcd76-e209-4a6a-b286-70df355acfea)
+
 
 
 ---
